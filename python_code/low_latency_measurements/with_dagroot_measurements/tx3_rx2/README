@@ -1,0 +1,11 @@
+Schedule is shown below.
+
+LN means leaf node
+DR means DAGroot
+
+
+    +------+-----+----+----+-----+
+LN  | TXRX | SRX | RX | TX | STX |
+    +------+-----+----+----+-----+
+DR  | TXRX | SRX | TX | RX | STX |
+    +------+-----+----+----+-----+

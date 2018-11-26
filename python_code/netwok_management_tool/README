@@ -1,0 +1,71 @@
+This folder contains all the tools used for latency improvement.
+For low latency measurements only one serial_comm_mote.py script is required.
+
+The script is specifically customized for low latency measurements with experimental setup.
+where 4 leaf nodes and one DAGroot are present in the network. namely LN1,LN2,LN3,LN4 and DAG. 
+these names are required for python network management tool to create a packet with destination
+While running this script all the nodes need to be connected to same PC. Different instances
+of this script is executed for each connected node. The USB port address is passed as a cmd
+parameter to the script. This is useful for deciding the other node in the control loop for
+generating the packet.
+
+Differenet commands are implemented in the script to communicate with the motes. those commands
+are will be displayed at the beginning of the script.
+
+The device connected to /dev/ttyUSB0 is assumed as DAGroot and following assumptions are made in the script.
+
+/dev/ttyUSB0 is assumed as DAG
+/dev/ttyUSB1 is assumed as LN1
+/dev/ttyUSB2 is assumed as LN2
+/dev/ttyUSB3 is assumed as LN3
+/dev/ttyUSB4 is assumed as LN4
+
+
+After starting the script with cmd line parameter /dev/ttyUSB0, command should be sent to mote
+to make it as dagroot, This is when the mote starts sending the packets. All the other motes will
+get synchronized with dagroot. If any node fails to synchronize/doesn't respond over serial just reset the mote(firmware is still buggy).
+
+Starting the script with different parameters allows for conncection to differnt motes
+
+Here two control loops are simulated system setup is shown below.
+
+
+Device node to which mote is connected is passed as a parameter to this script.
+
+eg:
+python serial_comm_mote.py /dev/ttyUSB1
+
+Since for measurements packets are injected directly to MAC layer, same script can be used for dagroot as well as for leaf nodes. In the setup dagroot
+provides only clock synchnization to the network.
+
+
+
+
+serial_comm_mote.py: This script is needed for communicating with the leaf nodes.
+implements a serial communication, serial packet frame formats. and network management
+
+
+python serial_comm_mote.py /dev/ttyUSB2
+
+serial thread: moteProbe@/dev/ttyUSB2 started successfully
+LN2
+Destn address 14:15:92:00:00:00:00:02
+Interactive mode. Commands:
+  root to make mote DAGroot
+  inject to inject packet
+  ipv6 to inject one packet
+  sch to get mote schedule
+  tx to add tx slot
+  rx to add rx slot
+  reset to reset the board
+  dump to save a json file
+  quit to exit 
+  
+  
+2<--1
+2-->1
+
+4<--3
+4-->3
+ 
+

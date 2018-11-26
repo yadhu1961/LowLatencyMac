@@ -1,0 +1,10 @@
+Used schedule for leaf nodes l1 and l2
+
+l1 --> leaf node one, whose schedule is shown in the first row of the table.
+l2 --> leaf node two schedule is shown in row 2 of the table. 
+
++------+----+------+------+----+------+
+| SRX  | TX | TXRX | TXRX | RX | STX  |
++------+----+------+------+----+------+
+| TXRX | RX | STX  | SRX  | TX | TXRX |
++------+----+------+------+----+------+

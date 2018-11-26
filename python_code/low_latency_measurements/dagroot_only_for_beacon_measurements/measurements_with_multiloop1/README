@@ -1,0 +1,23 @@
+Used schedule for Collecting samples
+
+Packet injection interval is 250ms 
+(This measurement is relaxed)
+
+
+In the current setup dagroot just provides time synchronization for the network.
+
+First control loop using channel 22
+    +------+----+------+------+----+------+
+LN1 | SRX  | TX | TXRX | TXRX | RX | STX  |
+    +------+----+------+------+----+------+
+LN2 | TXRX | RX | STX  | SRX  | TX | TXRX |
+    +------+----+------+------+----+------+
+
+
+
+Second comtrol loop using channel 18
+    +------+----+------+------+----+------+
+LN3 | SRX  | TX | TXRX | TXRX | RX | STX  |
+    +------+----+------+------+----+------+
+LN4 | TXRX | RX | STX  | SRX  | TX | TXRX |
+    +------+----+------+------+----+------+

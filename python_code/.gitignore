@@ -1,0 +1,7 @@
+#Python binaries
+*.pyc
+*.idea
+*.o
+*.elf
+*.out
+*.sublime*

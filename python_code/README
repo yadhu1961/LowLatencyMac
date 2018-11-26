@@ -1,0 +1,115 @@
+This folder contains all the tools used for latency improvement.
+For low latency measurements only one serial_comm_mote.py script is required.
+
+The script is specifically customized for low latency measurements with the current experimental setup.
+where 4 leaf nodes and one DAGroot are present in the network. namely LN1,LN2,LN3,LN4 and DAG. 
+these names are required for python network management tool to create a packet with corresponding destination
+address. While running this script all the nodes need to be connected to the same PC. Different instances of
+this script is executed for each connected node and the corresponding USB port address is passed as a cmd
+parameter to the script. Command line parameter is used for deciding destination address the other node in the
+control loop for generating the packet.
+
+Different commands are implemented in the script to communicate with the motes. those commands are will be
+displayed at the beginning of the script. Important commands required for taking measurements are "root", "inject"
+and "dump"
+
+The device connected to /dev/ttyUSB0 is assumed as DAGroot and following assumptions are made in the script.
+
+/dev/ttyUSB0 is assumed as DAG
+/dev/ttyUSB1 is assumed as LN1
+/dev/ttyUSB2 is assumed as LN2
+/dev/ttyUSB3 is assumed as LN3
+/dev/ttyUSB4 is assumed as LN4
+
+This naming correspondence also should be kept in mind while flashing the firmware to the motes because these names
+are passed as command line parameter to the flashing command
+
+After starting the script with cmd line parameter /dev/ttyUSB0, "root" command should be sent to mote
+to make it as dagroot, Then dagroot starts sending sync packets. All the other motes will get synchronized 
+with dagroot. If any node fails to synchronize/doesn't respond over serial just reset the mote(firmware is still buggy).
+
+Starting the script with different parameters allows for connection to different motes
+
+Here two control loops system setup is shown below.
+
+                    1<----->2
+                    3<----->4
+
+                        ^
+                        |
+                        |
+                        DG
+
+Device node(/dev/ttyUSB*) to which mote is connected is passed as a parameter to this script.
+
+
+Let's look at how latency measurement is done. As explained above, there are two loops(four leaf nodes) in the network
+and one dagroot, dagroot is only used providing synchronization in the network and is not part any data pkt transaction
+After setting dagroot nothing has to be done about the dagroot.
+
+Once dagroot is configured, all the leaf nodes in the network synchronized. Now latency measurement can be started. In 
+latency measurement process, one of the node in the control loop starts sending packets containing time stamp and sequence
+number, Other node in the network receives the packet, reads the sequence number, calculates one way latency and echos
+to the source. After pkt is received at the source, RTT latency is calculated. Sequence numbers are used for keeping track
+of the packet loss.
+
+
+eg:
+python serial_comm_mote.py /dev/ttyUSB2
+
+Since for measurements packets are injected directly to MAC layer, same script can be used for dagroot as well as for leaf nodes. In the our setup dagroot provides only clock synchnization to the network.
+
+serial_comm_mote.py: This script is needed for communicating with the nodes.
+it implements a serial communication, serial packet frame formats. and network management
+
+
+Script is started as shown below for dagroot.
+
+"python serial_comm_mote.py /dev/ttyUSB0"
+
+After starting following message will seen(Neglect the warnings). with parameter /dev/ttyUSB0 device node is assumed as dagroot.
+After starting the script, to start the sending the beacon packet "root" command needs to be sent. then dagroot starts providing
+sychronization packets to the network and all other nodes will get synchronized with the dagroot.
+
+serial thread: moteProbe@/dev/ttyUSB0 started successfully
+DG
+Interactive mode. Commands:
+  root to make mote DAGroot
+  inject to inject packet
+  ipv6 to inject one packet
+  sch to get mote schedule
+  tx to add tx slot
+  rx to add rx slot
+  reset to reset the board
+  dump to save a json file
+  quit to exit
+
+Command to be sent
+ root
+
+Script is started with the leaf nodes with corresponding device node as cmdline parameter
+
+"python serial_comm_mote.py /dev/ttyUSB2"
+
+serial thread: moteProbe@/dev/ttyUSB2 started successfully
+LN2
+Destn address 14:15:92:00:00:00:00:02
+Interactive mode. Commands:
+  root to make mote DAGroot
+  inject to inject packet
+  ipv6 to inject one packet
+  sch to get mote schedule
+  tx to add tx slot
+  rx to add rx slot
+  reset to reset the board
+  dump to save a json file
+  quit to exit
+
+ This node communicates forms a loop with the other node with the address [14:15:92:00:00:00:00:02], After all the nodes get
+ synchronized with the dagroot root, Latency measurement can be started with inject command. This command starts sending the
+ packets to the other node in the network, Number of pkts to be injected and packet injection interval can be controlled by
+ NUM_SAMPLES, PKT_INTERVAL variables respectively. After latency measurements are done, data needs to stored at json, "dump"
+ command is used for dumping the measurements in dictionary format, containing sequence number as the key and latency and
+ latency at different stages as the values. Overall four files will be stored. Dumping needs to be done at both nodes involved
+ in the network.
+
